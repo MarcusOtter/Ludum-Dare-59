@@ -12,7 +12,9 @@ public class RenderTextureComprarer : MonoBehaviour
     private void Update()
     {
         // TODO: Do not run this in Update, only on submit (performance hit)
-        var score = MaskIoU.Score(renderTextureA, renderTextureB);
+        var score = MaskIoU.ScoreShapeIgnorePlacement(
+            renderTextureA,
+            renderTextureB);
         var matchPercent = 100 * score;
         textMesh.text = $"Match: {matchPercent}%";
     }

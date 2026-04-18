@@ -2,12 +2,11 @@ using UnityEngine;
 
 public static class MaskIoU
 {
-    public static float Score(
+    public static float ScoreShapeIgnorePlacement(
         RenderTexture a,
         RenderTexture b,
         float alphaThreshold = 0.3f,
-        int dilationRadius = 0,
-        int maxShift = 32)
+        int dilationRadius = 5)
     {
         if (a.width != b.width || a.height != b.height)
         {
@@ -20,13 +19,29 @@ public static class MaskIoU
         var maskA = ReadBinaryMask(a, alphaThreshold);
         var maskB = ReadBinaryMask(b, alphaThreshold);
 
+        if (!TryGetBounds(maskA, width, height, out var boundsA))
+        {
+            return 0f;
+        }
+
+        if (!TryGetBounds(maskB, width, height, out var boundsB))
+        {
+            return 0f;
+        }
+
         if (dilationRadius > 0)
         {
             maskA = Dilate(maskA, width, height, dilationRadius);
             maskB = Dilate(maskB, width, height, dilationRadius);
         }
 
-        return ComputeBestShiftedIoU(maskA, maskB, width, height, maxShift);
+        var centerA = GetBoundsCenter(boundsA);
+        var centerB = GetBoundsCenter(boundsB);
+
+        var offsetX = Mathf.RoundToInt(centerA.x - centerB.x);
+        var offsetY = Mathf.RoundToInt(centerA.y - centerB.y);
+
+        return ComputeIoUAtOffset(maskA, maskB, width, height, offsetX, offsetY);
     }
 
     public static bool[] ReadBinaryMask(RenderTexture rt, float alphaThreshold)
@@ -52,75 +67,104 @@ public static class MaskIoU
         return mask;
     }
 
+    public static bool TryGetBounds(bool[] mask, int width, int height, out RectInt bounds)
+    {
+        int minX = width, minY = height, maxX = -1, maxY = -1;
+
+        for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
+        {
+            if (!mask[y * width + x])
+            {
+                continue;
+            }
+
+            if (x < minX)
+            {
+                minX = x;
+            }
+
+            if (y < minY)
+            {
+                minY = y;
+            }
+
+            if (x > maxX)
+            {
+                maxX = x;
+            }
+
+            if (y > maxY)
+            {
+                maxY = y;
+            }
+        }
+
+        if (maxX < minX || maxY < minY)
+        {
+            bounds = default;
+            return false;
+        }
+
+        bounds = new RectInt(minX, minY, maxX - minX + 1, maxY - minY + 1);
+        return true;
+    }
+
+    public static Vector2 GetBoundsCenter(RectInt bounds)
+    {
+        return new Vector2(
+            bounds.x + (bounds.width - 1) * 0.5f,
+            bounds.y + (bounds.height - 1) * 0.5f);
+    }
+
     public static bool[] Dilate(bool[] src, int width, int height, int radius)
     {
         var dst = new bool[src.Length];
 
         for (var y = 0; y < height; y++)
+        for (var x = 0; x < width; x++)
         {
-            for (var x = 0; x < width; x++)
-            {
-                var on = false;
+            var on = false;
 
-                for (var dy = -radius; dy <= radius && !on; dy++)
+            for (var dy = -radius; dy <= radius && !on; dy++)
+            {
+                var ny = y + dy;
+                if (ny < 0 || ny >= height)
                 {
-                    var ny = y + dy;
-                    if (ny < 0 || ny >= height)
+                    continue;
+                }
+
+                for (var dx = -radius; dx <= radius; dx++)
+                {
+                    var nx = x + dx;
+                    if (nx < 0 || nx >= width)
                     {
                         continue;
                     }
 
-                    for (var dx = -radius; dx <= radius; dx++)
+                    if (src[ny * width + nx])
                     {
-                        var nx = x + dx;
-                        if (nx < 0 || nx >= width)
-                        {
-                            continue;
-                        }
-
-                        if (src[ny * width + nx])
-                        {
-                            on = true;
-                            break;
-                        }
+                        on = true;
+                        break;
                     }
                 }
-
-                dst[y * width + x] = on;
             }
+
+            dst[y * width + x] = on;
         }
 
         return dst;
     }
 
-    public static float ComputeBestShiftedIoU(bool[] a, bool[] b, int width, int height, int maxShift)
-    {
-        var best = 0f;
-
-        for (var offsetY = -maxShift; offsetY <= maxShift; offsetY++)
-        {
-            for (var offsetX = -maxShift; offsetX <= maxShift; offsetX++)
-            {
-                var iou = ComputeIoUAtOffset(a, b, width, height, offsetX, offsetY);
-                if (iou > best)
-                {
-                    best = iou;
-                }
-            }
-        }
-
-        return best;
-    }
-
-    private static float ComputeIoUAtOffset(bool[] a, bool[] b, int width, int height, int offsetX, int offsetY)
+    public static float ComputeIoUAtOffset(bool[] a, bool[] b, int width, int height, int offsetX, int offsetY)
     {
         var intersection = 0;
         var union = 0;
 
         for (var y = 0; y < height; y++)
         {
-            var sampleY = y - offsetY;
-            var validY = sampleY >= 0 && sampleY < height;
+            var by = y - offsetY;
+            var validY = by >= 0 && by < height;
 
             for (var x = 0; x < width; x++)
             {
@@ -129,10 +173,10 @@ public static class MaskIoU
 
                 if (validY)
                 {
-                    var sampleX = x - offsetX;
-                    if (sampleX >= 0 && sampleX < width)
+                    var bx = x - offsetX;
+                    if (bx >= 0 && bx < width)
                     {
-                        bv = b[sampleY * width + sampleX];
+                        bv = b[by * width + bx];
                     }
                 }
 

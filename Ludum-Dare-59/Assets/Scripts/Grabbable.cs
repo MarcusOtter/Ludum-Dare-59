@@ -5,21 +5,24 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class Grabbable : MonoBehaviour
 {
+    private const float RotationSpeed = 125f;
+    private const float PreciseRotationSpeed = 25f;
+
     [SerializeField] private UnityEvent onFocusEnter;
     [SerializeField] private UnityEvent onFocusExit;
     [SerializeField] private UnityEvent onGrabEnter;
     [SerializeField] private UnityEvent onGrabExit;
 
-    [SerializeField] private float rotationSpeed = 1f;
-
     private bool _isFocused;
     private bool _isGrabbed;
 
+    private InputAction _preciseRotationButton;
     private InputAction _rotateAction;
 
     private void Start()
     {
         _rotateAction = InputSystem.actions.FindAction("Move");
+        _preciseRotationButton = InputSystem.actions.FindAction("Sprint");
     }
 
     private void Update()
@@ -29,7 +32,10 @@ public class Grabbable : MonoBehaviour
             return;
         }
 
-        transform.Rotate(Vector3.forward * (_rotateAction.ReadValue<Vector2>().x * rotationSpeed));
+        var speed = _preciseRotationButton.IsPressed() ? PreciseRotationSpeed : RotationSpeed;
+        var rotationDiff = _rotateAction.ReadValue<Vector2>().x * -1f * speed * Time.deltaTime;
+
+        transform.Rotate(Vector3.forward * rotationDiff);
     }
 
     public void GrabEnter()
