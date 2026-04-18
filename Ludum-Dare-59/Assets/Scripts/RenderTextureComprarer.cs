@@ -11,10 +11,9 @@ public class RenderTextureComprarer : MonoBehaviour
 
     private void Update()
     {
-        var maskA = MaskIoU.ReadBinaryMask(renderTextureA);
-        var maskB = MaskIoU.ReadBinaryMask(renderTextureB);
-        var iou = MaskIoU.ComputeIoU(maskA, maskB);
-        var matchPercent = 100 * iou;
+        // TODO: Do not run this in Update, only on submit (performance hit)
+        var score = MaskIoU.Score(renderTextureA, renderTextureB);
+        var matchPercent = 100 * score;
         textMesh.text = $"Match: {matchPercent}%";
     }
 }
