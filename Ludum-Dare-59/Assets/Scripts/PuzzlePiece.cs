@@ -20,11 +20,10 @@ public class PuzzlePiece : MonoBehaviour
             graphicsChild.gameObject.layer = puzzleLayer;
         }
 
-        var renderers = clonedGraphics.GetComponentsInChildren<SpriteRenderer>();
-        print(renderers.Length);
+        var renderers = graphicsParent.GetComponentsInChildren<SpriteRenderer>();
         foreach (var r in renderers)
         {
-            r.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            r.maskInteraction = SpriteMaskInteraction.None;
         }
     }
 

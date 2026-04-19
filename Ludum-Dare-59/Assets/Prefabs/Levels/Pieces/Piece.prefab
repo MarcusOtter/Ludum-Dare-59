@@ -278,7 +278,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2590129875559771699}
   - component: {fileID: 3636766125338497175}
-  - component: {fileID: 5174288740342382225}
   m_Layer: 0
   m_Name: man-bat-0
   m_TagString: Untagged
@@ -349,7 +348,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
   m_Sprite: {fileID: 21300000, guid: 061622219135b685483fe45a82b0dc12, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -360,15 +359,3 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &5174288740342382225
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3535944625803649500}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5a39d53a9bcd8d52b0b48d6c4131b50, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LayerOrderJiggle
