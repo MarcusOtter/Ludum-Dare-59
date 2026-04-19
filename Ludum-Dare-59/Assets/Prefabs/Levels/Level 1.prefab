@@ -218,6 +218,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Level
   secondsUntilGameOver: 60
   target: {fileID: 9066780461674939084}
+  shapeGrades: {x: 0.7, y: 0.8, z: 0.9}
+  timeGrades: {x: 10, y: 20, z: 50}
   pieces:
   - {fileID: 76711266639270411}
   - {fileID: 3496995588765327399}

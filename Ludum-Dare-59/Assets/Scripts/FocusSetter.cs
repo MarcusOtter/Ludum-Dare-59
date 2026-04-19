@@ -4,9 +4,13 @@ using UnityEngine.InputSystem;
 
 public class FocusSetter : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer handRenderer;
+    [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private Sprite hoverSprite;
+    [SerializeField] private Sprite grabSprite;
+
     private Grabbable _focused;
     private Grabbable _grabbed;
-
     private bool _hasPickedUpPiece;
     private Grabbable _hovered;
 
@@ -22,6 +26,7 @@ public class FocusSetter : MonoBehaviour
 
     private void Update()
     {
+        UpdateCursor();
         var mousePos = _mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         var hit = Physics2D.Raycast(mousePos, Vector2.zero);
         var isMousePressed = _selectAction.IsPressed();
@@ -63,6 +68,25 @@ public class FocusSetter : MonoBehaviour
     }
 
     public static event Action OnFirstPiecePickedUp;
+
+    private void UpdateCursor()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
+
+        if (_grabbed)
+        {
+            handRenderer.sprite = grabSprite;
+        }
+        else if (_hovered)
+        {
+            handRenderer.sprite = hoverSprite;
+        }
+        else
+        {
+            handRenderer.sprite = defaultSprite;
+        }
+    }
 
     private void StartHover(Grabbable grabbable)
     {
