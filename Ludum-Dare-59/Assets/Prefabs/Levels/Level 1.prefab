@@ -216,7 +216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e68362f1f53307c0c9deb2554f2c299f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Level
-  secondsUntilGameOver: 10
+  secondsUntilGameOver: 60
   target: {fileID: 9066780461674939084}
   pieces:
   - {fileID: 76711266639270411}

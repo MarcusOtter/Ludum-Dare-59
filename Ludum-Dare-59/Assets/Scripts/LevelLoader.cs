@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class LevelLoader : MonoBehaviour
 {
@@ -42,11 +41,11 @@ public class LevelLoader : MonoBehaviour
         }
 
         // TODO Remove
-        if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
-        {
-            // StartLevel(levels[currentLevelIndex]);
-            SimpleSceneManager.LoadNextScene();
-        }
+        // if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        // {
+        //     // StartLevel(levels[currentLevelIndex]);
+        //     SimpleSceneManager.LoadNextScene();
+        // }
     }
 
     private void OnEnable()

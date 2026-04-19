@@ -19,6 +19,13 @@ public class PuzzlePiece : MonoBehaviour
         {
             graphicsChild.gameObject.layer = puzzleLayer;
         }
+
+        var renderers = clonedGraphics.GetComponentsInChildren<SpriteRenderer>();
+        print(renderers.Length);
+        foreach (var r in renderers)
+        {
+            r.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        }
     }
 
     // Update is called once per frame

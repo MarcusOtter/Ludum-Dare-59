@@ -4,31 +4,68 @@ using UnityEngine.InputSystem;
 
 public class RenderTextureComprarer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI textMesh;
-    [SerializeField] private RenderTexture targetRenderTexture;
+    [Header("References")] [SerializeField]
+    private RenderTexture targetRenderTexture;
+
     [SerializeField] private RenderTexture playerRenderTexture;
+
+    [Header("Debug")] [SerializeField] private bool isDebug;
+    [SerializeField] private TextMeshProUGUI textMesh;
     [SerializeField] private SpriteMask testMask;
 
-    private void Update()
+    private void Start()
     {
-        if (!InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        if (!isDebug)
         {
             return;
         }
 
+        testMask.sprite = null;
+    }
+
+    private void Update()
+    {
+        if (!isDebug)
+        {
+            return;
+        }
+
+        if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        {
+            var score = GetScore();
+            var sprite = GetPlayerSprite();
+            var matchPercent = 100 * score;
+
+            if (textMesh)
+            {
+                textMesh.text = $"Match: {matchPercent}%";
+            }
+
+            if (testMask)
+            {
+                testMask.sprite = sprite;
+            }
+        }
+    }
+
+    public float GetScore()
+    {
         var score = MaskIoU.ScoreIgnorePositionAndRotation(
             targetRenderTexture,
             playerRenderTexture,
             0.3f,
             2f);
-        var matchPercent = 100 * score;
-        textMesh.text = $"Match: {matchPercent}%";
 
+        return score;
+    }
+
+    public Sprite GetPlayerSprite()
+    {
         var rect = new Rect(0, 0, playerRenderTexture.width, playerRenderTexture.height);
         var texture2D = ToTexture2D(playerRenderTexture, rect);
         var sprite = Sprite.Create(texture2D, rect, new Vector2(0.5f, 0.5f));
 
-        testMask.sprite = sprite;
+        return sprite;
     }
 
     // Source - https://stackoverflow.com/a/44265122
