@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class LevelLoader : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI timeRemainingText;
     [SerializeField] private Level[] levels;
     [SerializeField] private int currentLevelIndex;
     [SerializeField] private Transform pieceSlotParent;
@@ -11,6 +13,9 @@ public class LevelLoader : MonoBehaviour
 
     private readonly List<Transform> _pieceSlots = new();
     private Level _currentLevel;
+    private bool _isTimerRunning;
+
+    private float _timeRemaining;
 
     private void Start()
     {
@@ -24,11 +29,45 @@ public class LevelLoader : MonoBehaviour
 
     private void Update()
     {
+        if (_isTimerRunning)
+        {
+            SetTimeRemaining(_timeRemaining - Time.deltaTime);
+        }
+
+        if (_timeRemaining <= 0)
+        {
+            // TODO Do some game over thing, probably same thing that happens when you press lever, some sequence?
+            _isTimerRunning = false;
+            SetTimeRemaining(0f);
+        }
+
+        // TODO Remove
         if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
         {
             // StartLevel(levels[currentLevelIndex]);
             SimpleSceneManager.LoadNextScene();
         }
+    }
+
+    private void OnEnable()
+    {
+        FocusSetter.OnFirstPiecePickedUp += StartLevelTimer;
+    }
+
+    private void OnDisable()
+    {
+        FocusSetter.OnFirstPiecePickedUp -= StartLevelTimer;
+    }
+
+    private void SetTimeRemaining(float newTimeRemaining)
+    {
+        _timeRemaining = newTimeRemaining;
+        timeRemainingText.text = _timeRemaining.ToString("F2");
+    }
+
+    private void StartLevelTimer()
+    {
+        _isTimerRunning = true;
     }
 
     private void StartLevel(Level level)
@@ -51,7 +90,6 @@ public class LevelLoader : MonoBehaviour
         _currentLevel.target.position = targetParent.position;
         _currentLevel.target.gameObject.SetActive(true);
 
-        // TODO Do something with this
-        // _currentLevel.secondsUntilGameOver
+        SetTimeRemaining(_currentLevel.secondsUntilGameOver);
     }
 }

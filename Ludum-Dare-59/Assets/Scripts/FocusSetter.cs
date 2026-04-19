@@ -1,11 +1,9 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class FocusSetter : MonoBehaviour
 {
-    public UnityEvent onFirstPiecePickedUp;
-
     private Grabbable _focused;
     private Grabbable _grabbed;
 
@@ -63,6 +61,8 @@ public class FocusSetter : MonoBehaviour
             StopGrab();
         }
     }
+
+    public static event Action OnFirstPiecePickedUp;
 
     private void StartHover(Grabbable grabbable)
     {
@@ -137,8 +137,7 @@ public class FocusSetter : MonoBehaviour
 
         if (!_hasPickedUpPiece)
         {
-            onFirstPiecePickedUp?.Invoke();
-            print("Picked up first piece");
+            OnFirstPiecePickedUp?.Invoke();
             _hasPickedUpPiece = true;
         }
 
