@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16352bee05364ab5b5ab9f2eb2f530eb, type: 3}
+  m_Name: Plinks
+  m_EditorClassIdentifier: Assembly-CSharp::CustomAudioClip
+  maxVolume: 0.6
+  minVolume: 0.4
+  maxPitch: 1.1
+  minPitch: 0.9
+  audioClips:
+  - {fileID: 8300000, guid: b4526d33f6ea8e4a79b5c7324a43a164, type: 3}
+  - {fileID: 8300000, guid: bd45181bba95ef2559c50870393f88b3, type: 3}

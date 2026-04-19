@@ -5,9 +5,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class Grabbable : MonoBehaviour
 {
-    private const float RotationSpeed = 125f;
-    private const float PreciseRotationSpeed = 20f;
+    private const float RotationSpeed = 150f;
+    private const float PreciseRotationSpeed = 16f;
 
+    [SerializeField] private CustomAudioClip pickupSound;
     [SerializeField] private SpriteRenderer backgroundRenderer;
     [SerializeField] private UnityEvent onGrabEnter;
     [SerializeField] private UnityEvent onGrabExit;
@@ -77,7 +78,13 @@ public class Grabbable : MonoBehaviour
 
     public void GrabEnter()
     {
+        if (_isGrabbed)
+        {
+            return;
+        }
+        
         _isGrabbed = true;
+        AudioPlayer.Instance.PlaySoundEffect(pickupSound);
         onGrabEnter?.Invoke();
     }
 

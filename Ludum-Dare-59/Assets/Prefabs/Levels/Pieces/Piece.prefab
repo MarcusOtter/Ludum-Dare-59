@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 302ceed7575b3f31f859b3d7ea4eefc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Grabbable
+  pickupSound: {fileID: 11400000, guid: f02d93e7eabdbf95588deb277baa1cfb, type: 2}
   backgroundRenderer: {fileID: 5060256190888956961}
   onGrabEnter:
     m_PersistentCalls:
@@ -255,7 +256,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 0.70980394, b: 0.6509804, a: 0.39215687}
@@ -346,7 +347,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 061622219135b685483fe45a82b0dc12, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

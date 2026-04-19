@@ -59,6 +59,7 @@ public class AudioPlayer : SingletonMonoBehaviour<AudioPlayer>
         Destroy(source.gameObject, clip.GetClip().length + 2f);
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private static AudioSource SpawnNewAudioSource()
     {
         var obj = new GameObject("Audio source", typeof(AudioSource));
