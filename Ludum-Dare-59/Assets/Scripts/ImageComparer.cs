@@ -2,51 +2,65 @@ using UnityEngine;
 
 public static class MaskIoU
 {
-    public static float ScoreShapeIgnorePlacement(
-        RenderTexture a,
-        RenderTexture b,
+    public static float ScoreIgnorePositionAndRotation(
+        RenderTexture targetRt,
+        RenderTexture playerRt,
         float alphaThreshold = 0.3f,
-        int dilationRadius = 5)
+        float angleStep = 5f)
     {
-        if (a.width != b.width || a.height != b.height)
+        if (targetRt.width != playerRt.width || targetRt.height != playerRt.height)
         {
             return 0f;
         }
 
-        var width = a.width;
-        var height = a.height;
+        var width = targetRt.width;
+        var height = targetRt.height;
 
-        var maskA = ReadBinaryMask(a, alphaThreshold);
-        var maskB = ReadBinaryMask(b, alphaThreshold);
+        var target = ReadBinaryMask(targetRt, alphaThreshold);
+        var player = ReadBinaryMask(playerRt, alphaThreshold);
 
-        if (!TryGetBounds(maskA, width, height, out var boundsA))
+        if (!TryGetCentroid(target, width, height, out var targetCentroid, out var targetArea))
         {
             return 0f;
         }
 
-        if (!TryGetBounds(maskB, width, height, out var boundsB))
+        if (!TryGetCentroid(player, width, height, out var playerCentroid, out var playerArea))
         {
             return 0f;
         }
 
-        if (dilationRadius > 0)
+        var bestIoU = 0f;
+
+        for (var angle = 0f; angle < 360f; angle += angleStep)
         {
-            maskA = Dilate(maskA, width, height, dilationRadius);
-            maskB = Dilate(maskB, width, height, dilationRadius);
+            var rotated = RotateMask(player, width, height, playerCentroid, angle);
+
+            if (!TryGetCentroid(rotated, width, height, out var rotatedCentroid, out _))
+            {
+                continue;
+            }
+
+            var iou = ComputeIoUAtAlignedCentroid(
+                target,
+                rotated,
+                width,
+                height,
+                targetCentroid,
+                rotatedCentroid);
+
+            if (iou > bestIoU)
+            {
+                bestIoU = iou;
+            }
         }
 
-        var centerA = GetBoundsCenter(boundsA);
-        var centerB = GetBoundsCenter(boundsB);
-
-        var offsetX = Mathf.RoundToInt(centerA.x - centerB.x);
-        var offsetY = Mathf.RoundToInt(centerA.y - centerB.y);
-
-        return ComputeIoUAtOffset(maskA, maskB, width, height, offsetX, offsetY);
+        var areaSimilarity = Mathf.Min(targetArea, playerArea) / (float)Mathf.Max(targetArea, playerArea);
+        return bestIoU * areaSimilarity;
     }
 
-    public static bool[] ReadBinaryMask(RenderTexture rt, float alphaThreshold)
+    public static bool[] ReadBinaryMask(RenderTexture rt, float alphaThreshold = 0.3f)
     {
-        var prev = RenderTexture.active;
+        var previous = RenderTexture.active;
         RenderTexture.active = rt;
 
         var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
@@ -55,7 +69,7 @@ public static class MaskIoU
 
         var pixels = tex.GetPixels32();
         var mask = new bool[pixels.Length];
-        var threshold = alphaThreshold * 255f;
+        var threshold = (byte)Mathf.RoundToInt(alphaThreshold * 255f);
 
         for (var i = 0; i < pixels.Length; i++)
         {
@@ -63,118 +77,106 @@ public static class MaskIoU
         }
 
         Object.Destroy(tex);
-        RenderTexture.active = prev;
+        RenderTexture.active = previous;
+
         return mask;
     }
 
-    public static bool TryGetBounds(bool[] mask, int width, int height, out RectInt bounds)
+    public static bool TryGetCentroid(bool[] mask, int width, int height, out Vector2 centroid, out int area)
     {
-        int minX = width, minY = height, maxX = -1, maxY = -1;
+        long sumX = 0;
+        long sumY = 0;
+        area = 0;
 
         for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
         {
-            if (!mask[y * width + x])
+            var row = y * width;
+
+            for (var x = 0; x < width; x++)
             {
-                continue;
-            }
-
-            if (x < minX)
-            {
-                minX = x;
-            }
-
-            if (y < minY)
-            {
-                minY = y;
-            }
-
-            if (x > maxX)
-            {
-                maxX = x;
-            }
-
-            if (y > maxY)
-            {
-                maxY = y;
-            }
-        }
-
-        if (maxX < minX || maxY < minY)
-        {
-            bounds = default;
-            return false;
-        }
-
-        bounds = new RectInt(minX, minY, maxX - minX + 1, maxY - minY + 1);
-        return true;
-    }
-
-    public static Vector2 GetBoundsCenter(RectInt bounds)
-    {
-        return new Vector2(
-            bounds.x + (bounds.width - 1) * 0.5f,
-            bounds.y + (bounds.height - 1) * 0.5f);
-    }
-
-    public static bool[] Dilate(bool[] src, int width, int height, int radius)
-    {
-        var dst = new bool[src.Length];
-
-        for (var y = 0; y < height; y++)
-        for (var x = 0; x < width; x++)
-        {
-            var on = false;
-
-            for (var dy = -radius; dy <= radius && !on; dy++)
-            {
-                var ny = y + dy;
-                if (ny < 0 || ny >= height)
+                if (!mask[row + x])
                 {
                     continue;
                 }
 
-                for (var dx = -radius; dx <= radius; dx++)
-                {
-                    var nx = x + dx;
-                    if (nx < 0 || nx >= width)
-                    {
-                        continue;
-                    }
+                sumX += x;
+                sumY += y;
+                area++;
+            }
+        }
 
-                    if (src[ny * width + nx])
-                    {
-                        on = true;
-                        break;
-                    }
+        if (area == 0)
+        {
+            centroid = default;
+            return false;
+        }
+
+        centroid = new Vector2((float)sumX / area, (float)sumY / area);
+        return true;
+    }
+
+    public static bool[] RotateMask(bool[] src, int width, int height, Vector2 center, float angleDeg)
+    {
+        var dst = new bool[src.Length];
+
+        var rad = angleDeg * Mathf.Deg2Rad;
+        var cos = Mathf.Cos(rad);
+        var sin = Mathf.Sin(rad);
+
+        for (var y = 0; y < height; y++)
+        {
+            var row = y * width;
+
+            for (var x = 0; x < width; x++)
+            {
+                var dx = x - center.x;
+                var dy = y - center.y;
+
+                var sx = cos * dx + sin * dy + center.x;
+                var sy = -sin * dx + cos * dy + center.y;
+
+                var ix = Mathf.RoundToInt(sx);
+                var iy = Mathf.RoundToInt(sy);
+
+                if ((uint)ix < (uint)width && (uint)iy < (uint)height)
+                {
+                    dst[row + x] = src[iy * width + ix];
                 }
             }
-
-            dst[y * width + x] = on;
         }
 
         return dst;
     }
 
-    public static float ComputeIoUAtOffset(bool[] a, bool[] b, int width, int height, int offsetX, int offsetY)
+    public static float ComputeIoUAtAlignedCentroid(
+        bool[] a,
+        bool[] b,
+        int width,
+        int height,
+        Vector2 centroidA,
+        Vector2 centroidB)
     {
+        var offsetX = Mathf.RoundToInt(centroidA.x - centroidB.x);
+        var offsetY = Mathf.RoundToInt(centroidA.y - centroidB.y);
+
         var intersection = 0;
         var union = 0;
 
         for (var y = 0; y < height; y++)
         {
             var by = y - offsetY;
-            var validY = by >= 0 && by < height;
+            var validY = (uint)by < (uint)height;
+            var rowA = y * width;
 
             for (var x = 0; x < width; x++)
             {
-                var av = a[y * width + x];
+                var av = a[rowA + x];
                 var bv = false;
 
                 if (validY)
                 {
                     var bx = x - offsetX;
-                    if (bx >= 0 && bx < width)
+                    if ((uint)bx < (uint)width)
                     {
                         bv = b[by * width + bx];
                     }

@@ -3,11 +3,11 @@ using UnityEngine.InputSystem;
 
 public class FocusSetter : MonoBehaviour
 {
-    private static Grabbable FocusedGrabbable;
-
+    private Grabbable _focused;
     private Grabbable _grabbed;
-    private Camera _mainCamera;
+    private Grabbable _hovered;
 
+    private Camera _mainCamera;
     private InputAction _selectAction;
 
     private void Start()
@@ -37,41 +37,97 @@ public class FocusSetter : MonoBehaviour
             }
         }
 
-        if (isMousePressed && isHoveringGrabbable)
+        if (isHoveringGrabbable)
         {
             hit.transform.TryGetComponent<Grabbable>(out var grabbable);
-            StartGrab(grabbable);
+            StartHover(grabbable);
+
+            if (isMousePressed)
+            {
+                StartGrab(grabbable);
+            }
+        }
+        else
+        {
+            StopHover();
         }
 
-        if (!isMousePressed) StopGrab();
+        if (!isMousePressed)
+        {
+            StopGrab();
+        }
+    }
+
+    private void StartHover(Grabbable grabbable)
+    {
+        if (!grabbable)
+        {
+            return;
+        }
+
+        if (_hovered == grabbable)
+        {
+            return;
+        }
+
+        if (_hovered)
+        {
+            _hovered.HoverExit();
+        }
+
+        _hovered = grabbable;
+        grabbable.HoverEnter();
+    }
+
+    private void StopHover()
+    {
+        if (!_hovered)
+        {
+            return;
+        }
+
+        _hovered.HoverExit();
+        _hovered = null;
     }
 
     private void StartFocus(Grabbable grabbable)
     {
-        if (grabbable == null) return;
+        if (!grabbable)
+        {
+            return;
+        }
 
-        if (FocusedGrabbable != null) FocusedGrabbable.FocusExit();
+        if (_focused)
+        {
+            _focused.FocusExit();
+        }
 
-        FocusedGrabbable = grabbable;
+        _focused = grabbable;
         grabbable.FocusEnter();
     }
 
     private void StopFocus()
     {
-        if (FocusedGrabbable == null) return;
+        if (!_focused)
+        {
+            return;
+        }
 
-        FocusedGrabbable.FocusExit();
-        FocusedGrabbable = null;
+        _focused.FocusExit();
+        _focused = null;
     }
 
     private void StartGrab(Grabbable grabbable)
     {
-        if (grabbable == null) return;
-        if (grabbable != FocusedGrabbable) return;
-        // if (_grabbed != null)
-        // {
-        //     _grabbed.GrabExit();
-        // }
+        if (!grabbable)
+        {
+            return;
+        }
+
+        if (grabbable != _focused)
+        {
+            return;
+        }
 
         _grabbed = grabbable;
         grabbable.GrabEnter();
@@ -79,7 +135,11 @@ public class FocusSetter : MonoBehaviour
 
     private void StopGrab()
     {
-        if (_grabbed == null) return;
+        if (!_grabbed)
+        {
+            return;
+        }
+
         _grabbed.GrabExit();
         _grabbed = null;
     }

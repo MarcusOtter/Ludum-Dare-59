@@ -6,15 +6,22 @@ using UnityEngine.InputSystem;
 public class Grabbable : MonoBehaviour
 {
     private const float RotationSpeed = 125f;
-    private const float PreciseRotationSpeed = 25f;
+    private const float PreciseRotationSpeed = 20f;
 
-    [SerializeField] private UnityEvent onFocusEnter;
-    [SerializeField] private UnityEvent onFocusExit;
+    [SerializeField] private SpriteRenderer backgroundRenderer;
     [SerializeField] private UnityEvent onGrabEnter;
     [SerializeField] private UnityEvent onGrabExit;
 
+    [SerializeField] [Range(0, 1)] private float addedHoverAlpha = 0.2f;
+    [SerializeField] [Range(0, 1)] private float addedFocusAlpha = 0.3f;
+
+    private float _backgroundBaseAlpha;
+
     private bool _isFocused;
+#pragma warning disable CS0414 // Field is assigned but its value is never used
     private bool _isGrabbed;
+#pragma warning restore CS0414 // Field is assigned but its value is never used
+    private bool _isHovered;
 
     private InputAction _preciseRotationButton;
     private InputAction _rotateAction;
@@ -23,10 +30,14 @@ public class Grabbable : MonoBehaviour
     {
         _rotateAction = InputSystem.actions.FindAction("Move");
         _preciseRotationButton = InputSystem.actions.FindAction("Sprint");
+
+        _backgroundBaseAlpha = backgroundRenderer.color.a;
     }
 
     private void Update()
     {
+        backgroundRenderer.color = backgroundRenderer.color.With(a: GetBackgroundAlpha());
+
         if (!_isFocused)
         {
             return;
@@ -36,6 +47,32 @@ public class Grabbable : MonoBehaviour
         var rotationDiff = _rotateAction.ReadValue<Vector2>().x * -1f * speed * Time.deltaTime;
 
         transform.Rotate(Vector3.forward * rotationDiff);
+    }
+
+    private float GetBackgroundAlpha()
+    {
+        var value = _backgroundBaseAlpha;
+        if (_isHovered)
+        {
+            value += addedHoverAlpha;
+        }
+
+        if (_isFocused)
+        {
+            value += addedFocusAlpha;
+        }
+
+        return Mathf.Clamp01(value);
+    }
+
+    public void HoverEnter()
+    {
+        _isHovered = true;
+    }
+
+    public void HoverExit()
+    {
+        _isHovered = false;
     }
 
     public void GrabEnter()
@@ -53,12 +90,10 @@ public class Grabbable : MonoBehaviour
     public void FocusEnter()
     {
         _isFocused = true;
-        onFocusEnter?.Invoke();
     }
 
     public void FocusExit()
     {
         _isFocused = false;
-        onFocusExit?.Invoke();
     }
 }
