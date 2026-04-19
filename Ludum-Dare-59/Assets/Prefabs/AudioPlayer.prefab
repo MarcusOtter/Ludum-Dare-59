@@ -142,3 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60eae6e8994743419d88af66f050dfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioPlayer
+  dialogueSequenceTest:
+  - {fileID: 11400000, guid: 55a01cf8d5e8a9e778d741d962d28762, type: 2}
+  - {fileID: 11400000, guid: 9c304bc7a44ab1a6a89ed2746ca94a3d, type: 2}
+  dialogueOneshotTest: {fileID: 0}

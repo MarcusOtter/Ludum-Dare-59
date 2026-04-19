@@ -3,11 +3,11 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Custom audio clip")]
 public class CustomAudioClip : ScriptableObject
 {
-    [SerializeField] [Range(0, 1)] private float maxVolume = 0.5f;
-    [SerializeField] [Range(0, 1)] private float minVolume = 0.5f;
-    [SerializeField] [Range(0, 2)] private float maxPitch = 1f;
-    [SerializeField] [Range(0, 2)] private float minPitch = 1f;
     [SerializeField] private AudioClip[] audioClips;
+    [SerializeField] [Range(0, 2)] private float maxPitch = 1f;
+    [SerializeField] [Range(0, 1)] private float maxVolume = 0.5f;
+    [SerializeField] [Range(0, 2)] private float minPitch = 1f;
+    [SerializeField] [Range(0, 1)] private float minVolume = 0.5f;
 
     public AudioClip GetClip()
     {

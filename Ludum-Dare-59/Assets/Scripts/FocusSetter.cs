@@ -1,10 +1,15 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class FocusSetter : MonoBehaviour
 {
+    public UnityEvent onFirstPiecePickedUp;
+
     private Grabbable _focused;
     private Grabbable _grabbed;
+
+    private bool _hasPickedUpPiece;
     private Grabbable _hovered;
 
     private Camera _mainCamera;
@@ -14,6 +19,7 @@ public class FocusSetter : MonoBehaviour
     {
         _selectAction = InputSystem.actions.FindAction("Attack");
         _mainCamera = Camera.main;
+        _hasPickedUpPiece = false;
     }
 
     private void Update()
@@ -127,6 +133,13 @@ public class FocusSetter : MonoBehaviour
         if (grabbable != _focused)
         {
             return;
+        }
+
+        if (!_hasPickedUpPiece)
+        {
+            onFirstPiecePickedUp?.Invoke();
+            print("Picked up first piece");
+            _hasPickedUpPiece = true;
         }
 
         _grabbed = grabbable;

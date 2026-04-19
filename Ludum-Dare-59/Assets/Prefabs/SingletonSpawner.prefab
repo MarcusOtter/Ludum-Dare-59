@@ -48,3 +48,4 @@ MonoBehaviour:
   destroySelfAfterSpawn: 1
   objectsToSpawn:
   - {fileID: 2520072595493385232, guid: cf9a1c1a73dd764cc9d2e749b39af155, type: 3}
+  - {fileID: 5287797041842931258, guid: a7dd9e338cd7cb7f8b17c7615bcb606a, type: 3}

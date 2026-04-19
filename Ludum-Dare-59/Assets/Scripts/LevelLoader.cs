@@ -26,8 +26,8 @@ public class LevelLoader : MonoBehaviour
     {
         if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
         {
-            StartLevel(levels[currentLevelIndex]);
-            // SimpleSceneManager.LoadNextScene();
+            // StartLevel(levels[currentLevelIndex]);
+            SimpleSceneManager.LoadNextScene();
         }
     }
 
