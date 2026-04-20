@@ -30,21 +30,23 @@ public class RenderTextureComprarer : MonoBehaviour
             return;
         }
 
-        if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
+        if (!InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
         {
-            var score = GetScore();
-            var sprite = GetPlayerSprite();
-            var matchPercent = 100 * score;
+            return;
+        }
 
-            if (textMesh)
-            {
-                textMesh.text = $"Match: {matchPercent}%";
-            }
+        var score = GetScore();
+        var sprite = GetPlayerSprite();
+        var matchPercent = 100 * score;
 
-            if (testMask)
-            {
-                testMask.sprite = sprite;
-            }
+        if (textMesh)
+        {
+            textMesh.text = $"Match: {matchPercent}%";
+        }
+
+        if (testMask)
+        {
+            testMask.sprite = sprite;
         }
     }
 

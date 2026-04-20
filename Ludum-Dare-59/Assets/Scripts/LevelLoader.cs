@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class LevelLoader : MonoBehaviour
 {
@@ -36,16 +35,9 @@ public class LevelLoader : MonoBehaviour
 
         if (_timeRemaining <= 0)
         {
-            // TODO Do some game over thing, probably same thing that happens when you press lever, some sequence?
             _isTimerRunning = false;
             SetTimeRemaining(0f);
-        }
-
-        // TODO Remove
-        if (InputSystem.actions.FindAction("Jump").WasPressedThisFrame())
-        {
-            // StartLevel(levels[currentLevelIndex]);
-            SimpleSceneManager.LoadNextScene();
+            GameManager.Instance.TriggerGameOver();
         }
     }
 

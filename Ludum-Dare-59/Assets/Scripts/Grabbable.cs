@@ -37,6 +37,11 @@ public class Grabbable : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.IsGameOver)
+        {
+            return;
+        }
+
         backgroundRenderer.color = backgroundRenderer.color.With(a: GetBackgroundAlpha());
 
         if (!_isFocused)
@@ -82,9 +87,13 @@ public class Grabbable : MonoBehaviour
         {
             return;
         }
-        
+
         _isGrabbed = true;
-        AudioPlayer.Instance.PlaySoundEffect(pickupSound);
+        if (pickupSound)
+        {
+            AudioPlayer.Instance.PlaySoundEffect(pickupSound);
+        }
+
         onGrabEnter?.Invoke();
     }
 
