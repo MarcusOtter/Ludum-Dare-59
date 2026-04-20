@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(AudioSource))]
 public class AudioPlayer : SingletonMonoBehaviour<AudioPlayer>
 {
+    // TODO remove
     [SerializeField] private Dialogue[] dialogueSequenceTest;
     [SerializeField] private Dialogue dialogueOneshotTest;
     [SerializeField] private float delayBetweenDialogue = 1f;
@@ -12,7 +13,7 @@ public class AudioPlayer : SingletonMonoBehaviour<AudioPlayer>
     public UnityEvent<Dialogue> onDialogueStart;
     public UnityEvent onDialogueEnd;
 
-    private int _activeDialogueIndex;
+    private int _activeDialogueIndex = int.MaxValue - 1000;
     private Dialogue[] _activeDialogueSequence;
     private AudioSource _audioSource;
     private AudioSource _dialogueSource;
@@ -31,14 +32,15 @@ public class AudioPlayer : SingletonMonoBehaviour<AudioPlayer>
         _skipKeyA = InputSystem.actions.FindAction("Jump");
         // _skipKeyB = InputSystem.actions.FindAction("Attack");
 
-        if (dialogueSequenceTest.Length != 0)
-        {
-            PlayDialogueSequence(dialogueSequenceTest);
-        }
-        else if (dialogueOneshotTest)
-        {
-            PlayDialogue(dialogueOneshotTest);
-        }
+        // TODO: Remove
+        // if (dialogueSequenceTest.Length != 0)
+        // {
+        //     PlayDialogueSequence(dialogueSequenceTest);
+        // }
+        // else if (dialogueOneshotTest)
+        // {
+        //     PlayDialogue(dialogueOneshotTest);
+        // }
     }
 
     private void Update()

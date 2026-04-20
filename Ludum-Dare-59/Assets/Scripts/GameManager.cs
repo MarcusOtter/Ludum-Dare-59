@@ -8,8 +8,12 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     public bool IsGameOver { get; private set; }
     public event Action OnGameOver;
 
-
     // TODO: Store all level scores with persistence, it's easy
+
+    public void TriggerGameStart()
+    {
+        IsGameOver = false;
+    }
 
     public void TriggerGameOver()
     {

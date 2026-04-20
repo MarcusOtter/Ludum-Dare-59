@@ -69,6 +69,7 @@ public class LevelLoader : MonoBehaviour
             Destroy(_currentLevel.gameObject);
         }
 
+        GameManager.Instance.TriggerGameStart();
         _currentLevel = Instantiate(level, transform);
 
         for (var i = 0; i < _currentLevel.pieces.Length; i++)

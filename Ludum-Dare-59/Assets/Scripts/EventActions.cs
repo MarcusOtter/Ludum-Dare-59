@@ -10,6 +10,11 @@ public class EventActions : MonoBehaviour
         GameManager.Instance.TriggerGameOver();
     }
 
+    public void LoadNextScene()
+    {
+        SimpleSceneManager.LoadNextScene();
+    }
+
     public void PlaySound(CustomAudioClip audioClip)
     {
         AudioPlayer.Instance.PlaySoundEffect(audioClip);
