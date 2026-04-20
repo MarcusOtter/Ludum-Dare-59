@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 2590129875559771699}
   - component: {fileID: 3636766125338497175}
   m_Layer: 0
-  m_Name: man-bat-0
+  m_Name: Visible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

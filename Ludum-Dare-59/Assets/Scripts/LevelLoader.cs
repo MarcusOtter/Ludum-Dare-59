@@ -10,12 +10,10 @@ public class LevelLoader : MonoBehaviour
 
     private readonly List<Transform> _pieceSlots = new();
     private bool _isTimerRunning;
-    private Level _spawnedLevel;
     private float _timeRemaining;
 
     private void Start()
     {
-
         foreach (Transform t in pieceSlotParent)
         {
             _pieceSlots.Add(t);
@@ -62,24 +60,18 @@ public class LevelLoader : MonoBehaviour
 
     private void StartLevel()
     {
-        if (_spawnedLevel)
-        {
-            Destroy(_spawnedLevel.gameObject);
-        }
-
         GameManager.Instance.TriggerGameStart();
-        _spawnedLevel = Instantiate(level, transform);
 
-        for (var i = 0; i < _spawnedLevel.pieces.Length; i++)
+        Instantiate(level.target, transform);
+
+        for (var i = 0; i < level.pieces.Length; i++)
         {
-            var piece = _spawnedLevel.pieces[i];
+            var piece = Instantiate(level.pieces[i], transform);
             var angle = Random.Range(0, 360f);
-            piece.position = _pieceSlots[i].position;
-            piece.Rotate(Vector3.forward, angle);
+            piece.transform.position = _pieceSlots[i].position;
+            piece.transform.Rotate(Vector3.forward, angle);
         }
 
-        _spawnedLevel.target.gameObject.SetActive(true);
-
-        SetTimeRemaining(_spawnedLevel.secondsUntilGameOver);
+        SetTimeRemaining(level.secondsUntilGameOver);
     }
 }

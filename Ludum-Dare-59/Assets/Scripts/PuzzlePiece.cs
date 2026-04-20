@@ -26,9 +26,4 @@ public class PuzzlePiece : MonoBehaviour
             r.maskInteraction = SpriteMaskInteraction.None;
         }
     }
-
-    // Update is called once per frame
-    private void Update()
-    {
-    }
 }
