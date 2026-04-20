@@ -64,11 +64,17 @@ public class LevelLoader : MonoBehaviour
 
         Instantiate(level.target, transform);
 
-        for (var i = 0; i < level.pieces.Length; i++)
+        var remainingSlots = new List<Transform>(_pieceSlots);
+
+        foreach (var pieceTransform in level.pieces)
         {
-            var piece = Instantiate(level.pieces[i], transform);
+            var piece = Instantiate(pieceTransform, transform);
             var angle = Random.Range(0, 360f);
-            piece.transform.position = _pieceSlots[i].position;
+            var slotIndex = Random.Range(0, remainingSlots.Count);
+            var slot = remainingSlots[slotIndex];
+
+            remainingSlots.RemoveAt(slotIndex);
+            piece.transform.position = slot.position;
             piece.transform.Rotate(Vector3.forward, angle);
         }
 

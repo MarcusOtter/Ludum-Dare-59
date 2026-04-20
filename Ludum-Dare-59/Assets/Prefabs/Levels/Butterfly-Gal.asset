@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e68362f1f53307c0c9deb2554f2c299f, type: 3}
+  m_Name: Butterfly-Gal
+  m_EditorClassIdentifier: Assembly-CSharp::Level
+  secondsUntilGameOver: 60
+  shapeGrades: {x: 0.7, y: 0.8, z: 0.9}
+  timeGrades: {x: 10, y: 20, z: 45}
+  target: {fileID: 3987353975005671466, guid: 3630792b2ed4d570381b6e5e840f47e7, type: 3}
+  pieces:
+  - {fileID: 7856935530864586005, guid: c2ca6724d72e91f969f6ab164ecf360d, type: 3}
+  - {fileID: 4452957393292329571, guid: f006bb0a853ecf6e3a5e66374874c497, type: 3}
+  - {fileID: 8243732194703947773, guid: 9311bfa975fb0b3359e12de1cc8ef908, type: 3}
+  - {fileID: 6503794786193352984, guid: 9c79f83606e1529f68385757cf6b614a, type: 3}
+  - {fileID: 3852019136035100932, guid: beef68fc19d1eba26bd11aaef3b04cbd, type: 3}
