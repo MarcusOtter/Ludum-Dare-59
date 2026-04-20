@@ -3,12 +3,19 @@ using UnityEngine;
 
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
+    private RenderTextureComprarer _textureComparer;
     public Sprite LatestImage { get; private set; }
     public float LatestScore { get; private set; }
     public bool IsGameOver { get; private set; }
-    public event Action OnGameOver;
 
     // TODO: Store all level scores with persistence, it's easy
+
+    private void Start()
+    {
+        _textureComparer = GetComponentInChildren<RenderTextureComprarer>();
+    }
+
+    public event Action OnGameOver;
 
     public void TriggerGameStart()
     {
@@ -22,9 +29,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
             return;
         }
 
-        var textureComparer = FindAnyObjectByType<RenderTextureComprarer>();
-        LatestScore = textureComparer.GetScore();
-        LatestImage = textureComparer.GetPlayerSprite();
+        LatestScore = _textureComparer.GetScore();
+        LatestImage = _textureComparer.GetPlayerSprite();
 
         // TODO: Get grades from level
 

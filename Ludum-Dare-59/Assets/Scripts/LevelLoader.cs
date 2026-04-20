@@ -5,25 +5,23 @@ using UnityEngine;
 public class LevelLoader : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timeRemainingText;
-    [SerializeField] private Level[] levels;
-    [SerializeField] private int currentLevelIndex;
+    [SerializeField] private Level level;
     [SerializeField] private Transform pieceSlotParent;
-    [SerializeField] private Transform targetParent;
 
     private readonly List<Transform> _pieceSlots = new();
-    private Level _currentLevel;
     private bool _isTimerRunning;
-
+    private Level _spawnedLevel;
     private float _timeRemaining;
 
     private void Start()
     {
+
         foreach (Transform t in pieceSlotParent)
         {
             _pieceSlots.Add(t);
         }
 
-        StartLevel(levels[currentLevelIndex]);
+        StartLevel();
     }
 
     private void Update()
@@ -62,27 +60,26 @@ public class LevelLoader : MonoBehaviour
         _isTimerRunning = true;
     }
 
-    private void StartLevel(Level level)
+    private void StartLevel()
     {
-        if (_currentLevel)
+        if (_spawnedLevel)
         {
-            Destroy(_currentLevel.gameObject);
+            Destroy(_spawnedLevel.gameObject);
         }
 
         GameManager.Instance.TriggerGameStart();
-        _currentLevel = Instantiate(level, transform);
+        _spawnedLevel = Instantiate(level, transform);
 
-        for (var i = 0; i < _currentLevel.pieces.Length; i++)
+        for (var i = 0; i < _spawnedLevel.pieces.Length; i++)
         {
-            var piece = _currentLevel.pieces[i];
+            var piece = _spawnedLevel.pieces[i];
             var angle = Random.Range(0, 360f);
             piece.position = _pieceSlots[i].position;
             piece.Rotate(Vector3.forward, angle);
         }
 
-        _currentLevel.target.position = targetParent.position;
-        _currentLevel.target.gameObject.SetActive(true);
+        _spawnedLevel.target.gameObject.SetActive(true);
 
-        SetTimeRemaining(_currentLevel.secondsUntilGameOver);
+        SetTimeRemaining(_spawnedLevel.secondsUntilGameOver);
     }
 }

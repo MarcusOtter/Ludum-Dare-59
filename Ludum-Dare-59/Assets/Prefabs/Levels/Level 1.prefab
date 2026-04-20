@@ -134,6 +134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9066780461674939084}
   - component: {fileID: 7377858319934073119}
+  - component: {fileID: 4597811519399799109}
   m_Layer: 0
   m_Name: Target
   m_TagString: Untagged
@@ -170,6 +171,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PuzzlePiece
   graphicsParent: {fileID: 520017929696486437}
+--- !u!114 &4597811519399799109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3968366657483717947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c02121968bcccd021b9a87cb67917b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FollowTargetSlot
 --- !u!1 &7425228396885310652
 GameObject:
   m_ObjectHideFlags: 0
